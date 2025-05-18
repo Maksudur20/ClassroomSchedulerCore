@@ -1,0 +1,194 @@
+@model Booking
+@{
+    ViewData["Title"] = "Edit Booking";
+    var rooms = ViewBag.Rooms as List<Room>;
+}
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+                <li class="breadcrumb-item"><a asp-action="Index">Bookings</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Edit</li>
+            </ol>
+        </nav>
+        <h2>Edit Booking</h2>
+        <p class="lead">Modify the details of your classroom reservation.</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <form asp-action="Edit" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="UserId" />
+                    <input type="hidden" asp-for="CreatedAt" />
+                    
+                    <div class="mb-3">
+                        <label asp-for="RoomId" class="form-label">Room</label>
+                        <select asp-for="RoomId" class="form-select" asp-items="@(new SelectList(rooms, "Id", "Name"))">
+                            <option value="">-- Select a Room --</option>
+                        </select>
+                        <span asp-validation-for="RoomId" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Title" class="form-label">Booking Title</label>
+                        <input asp-for="Title" class="form-control" />
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="StartTime" class="form-label">Start Date/Time</label>
+                            <input asp-for="StartTime" class="form-control" type="datetime-local" />
+                            <span asp-validation-for="StartTime" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="EndTime" class="form-label">End Date/Time</label>
+                            <input asp-for="EndTime" class="form-control" type="datetime-local" />
+                            <span asp-validation-for="EndTime" class="text-danger"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label">Description</label>
+                        <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Status" class="form-label">Booking Status</label>
+                        <select asp-for="Status" class="form-select">
+                            <option value="@BookingStatus.Reserved">Reserved</option>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <option value="@BookingStatus.Available">Available</option>
+                                <option value="@BookingStatus.Emergency">Emergency</option>
+                            }
+                        </select>
+                        <span asp-validation-for="Status" class="text-danger"></span>
+                    </div>
+                    
+                    @if (User.IsInRole("Admin") || User.IsInRole("Faculty"))
+                    {
+                        <div class="mb-3 form-check">
+                            <input asp-for="IsEmergency" class="form-check-input" id="isEmergency" />
+                            <label asp-for="IsEmergency" class="form-check-label">Emergency Booking</label>
+                            <div class="form-text text-danger">
+                                Emergency bookings will override existing reservations. Use this option only for urgent situations.
+                            </div>
+                        </div>
+                    }
+                    
+                    @if (ViewBag.ConflictingBookings != null && ((List<Booking>)ViewBag.ConflictingBookings).Any())
+                    {
+                        <div class="alert alert-warning mb-3">
+                            <h6 class="alert-heading"><i class="bi bi-exclamation-triangle me-2"></i>Scheduling Conflicts</h6>
+                            <p>This booking conflicts with the following reservations:</p>
+                            <ul>
+                                @foreach (var conflict in (List<Booking>)ViewBag.ConflictingBookings)
+                                {
+                                    <li>
+                                        <strong>@conflict.Title</strong> - @conflict.StartTime.ToString("MM/dd/yyyy HH:mm") to @conflict.EndTime.ToString("HH:mm")
+                                        <span class="ms-2 badge @(conflict.IsEmergency ? "bg-danger" : "bg-warning")">
+                                            @(conflict.IsEmergency ? "Emergency" : "Reserved")
+                                        </span>
+                                    </li>
+                                }
+                            </ul>
+                            <p class="mb-0">
+                                @if (Model.IsEmergency || User.IsInRole("Admin"))
+                                {
+                                    <span>Your booking will override these conflicts because it is marked as emergency or you have administrative privileges.</span>
+                                }
+                                else
+                                {
+                                    <span>Please select a different time or room, or mark as emergency if this is an urgent situation.</span>
+                                }
+                            </p>
+                        </div>
+                    }
+                    
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-warning">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Edit Guidelines</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle me-2"></i>
+                    <span>Changes to this booking will be recorded in the system audit logs.</span>
+                </div>
+                <ul class="list-group list-group-flush mt-3">
+                    <li class="list-group-item">
+                        <strong>Time Changes</strong>: Ensure the new time slot is available unless using emergency override.
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Room Changes</strong>: Verify the new room meets your requirements (capacity, equipment).
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Emergency Status</strong>: Only use for critical situations that require immediate priority.
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Booking Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-primary">
+                        <i class="bi bi-info-circle me-2"></i> View Details
+                    </a>
+                    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger">
+                        <i class="bi bi-trash me-2"></i> Delete Booking
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // If emergency booking is checked, automatically set status to Emergency
+            const isEmergencyCheckbox = document.getElementById('isEmergency');
+            if (isEmergencyCheckbox) {
+                const statusSelect = document.getElementById('Status');
+                
+                // Initialize based on current state
+                if (isEmergencyCheckbox.checked && statusSelect) {
+                    statusSelect.value = '@((int)BookingStatus.Emergency)';
+                    statusSelect.disabled = true;
+                }
+                
+                isEmergencyCheckbox.addEventListener('change', function() {
+                    if (this.checked && statusSelect) {
+                        statusSelect.value = '@((int)BookingStatus.Emergency)';
+                        statusSelect.disabled = true;
+                    } else if (statusSelect) {
+                        statusSelect.disabled = false;
+                    }
+                });
+            }
+        });
+    </script>
+}

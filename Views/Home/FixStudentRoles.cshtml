@@ -1,0 +1,27 @@
+@{
+    ViewData["Title"] = "Fix Student Role Permissions";
+}
+
+<div class="row mb-3">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+                <li class="breadcrumb-item active">Fix Student Permissions</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h1 class="h3 mb-0">Fix Student Role Permissions</h1>
+    </div>
+    <div class="card-body">
+        <p>This tool will fix permissions for students to allow them to book classrooms. Click the button below to synchronize student roles and permissions:</p>
+        
+        <a asp-controller="Roles" asp-action="SyncRoles" class="btn btn-primary">
+            <i class="bi bi-key"></i> Fix Student Permissions
+        </a>
+    </div>
+</div>

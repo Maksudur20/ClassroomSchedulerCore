@@ -1,0 +1,141 @@
+Classroom Scheduler - Project Guide
+==================================
+
+Getting Started
+---------------
+**Setup Instructions**
+
+**Prerequisites:**
+- .NET 8.0 SDK installed (upgraded from .NET 9.0 Preview)
+- SQL Server/LocalDB
+- Visual Studio 2022 or VS Code
+
+**Open the Project:**
+```bash
+cd f:\assignment for c#
+dotnet restore
+```
+
+**Database Setup:**
+- The application uses Entity Framework Code First.
+- Connection string is in `appsettings.json`.
+- Database is created automatically on first run.
+- Initial data is seeded through `DbInitializer.cs`.
+
+**Run the Application:**
+```bash
+cd ClassroomSchedulerCore
+dotnet run
+```
+- Access at `http://localhost:5005` or `https://localhost:7005`
+
+Project Structure
+-----------------
+**Models/:** Core data entities
+- `ApplicationUser.cs`: Custom user with identity
+- `Room.cs`: Classroom information
+- `Booking.cs`: Scheduling data
+- `AuditLog.cs`: Activity tracking
+
+**Controllers/:** Application logic
+- `HomeController.cs`: Dashboard and main views
+- `RoomsController.cs`: Room management
+- `BookingsController.cs`: Booking operations
+
+**Views/:** UI templates organized by controller
+- Shared layouts and partial views for reuse
+- Uses Bootstrap for responsive design
+
+**Data/:** Database context and initialization
+- `ApplicationDbContext.cs`: EF Core configuration
+- `DbInitializer.cs`: Seeds initial data and users
+
+Key Features & How to Use Them
+------------------------------
+
+**User Authentication**
+- Default Accounts:
+  | Role    | Username              | Password     |
+  |---------|-----------------------|--------------|
+  | Admin   | admin@example.com     | Admin123!    |
+  | Faculty | faculty@example.com   | Faculty123!  |
+  | Student | student@example.com   | Student123!  |
+
+**Permissions:**
+- Admins: Full access to all features
+- Faculty: Can create and manage their bookings
+- Students: View-only access to schedules
+
+**Room Management (Admin Only)**
+- View Rooms: Browse the list of available rooms
+- Add Room: Click "Create New" and enter:
+  - Name, Location, Capacity
+  - Equipment (projector, computers)
+- Edit/Delete: Use actions in room listings
+
+**Booking System**
+- Create Booking:
+  - Click "Create New Booking"
+  - Select Room, Date, Time
+  - Enter Title, Description
+  - Set Booking Type (Regular/Emergency)
+- Managing Bookings:
+  - Faculty manage their own bookings
+  - Admins manage all bookings
+- Emergency bookings override regular bookings
+- Conflict prevention: No double-booking allowed
+- Visual indicators for conflicts
+
+**Audit Logging**
+- Logs actions like:
+  - Room creation/modification/deletion
+  - Booking activities
+  - Emergency overrides
+- Admins access logs via dashboard
+
+Development Workflow
+--------------------
+
+**Making Code Changes**
+- Create/modify models
+- Update database context
+- Add migrations:
+  ```bash
+  dotnet ef migrations add MigrationName
+  dotnet ef database update
+  ```
+- Implement controller logic and views
+
+**Front-end Customization:**
+- CSS: `wwwroot/css`
+- JavaScript: `wwwroot/js`
+- Use Bootstrap for responsive design
+
+**Testing:**
+- Use different accounts to test permissions
+- Create bookings to verify conflict handling
+- Confirm emergency booking overrides
+
+Troubleshooting Common Issues
+-----------------------------
+
+**Database Connection Problems:**
+- Check `appsettings.json`
+- Ensure SQL Server is running
+- Run: `dotnet ef database update`
+
+**Login Issues:**
+- Default accounts created on first run
+- Password policy configured in `Program.cs`
+
+**Booking Conflicts:**
+- Same-room overlapping bookings are blocked
+- Verify booking times
+
+Next Steps for Enhancement
+--------------------------
+- Email notifications for booking changes
+- Calendar integration (Google/Outlook)
+- Reporting dashboard for room utilization
+- Mobile experience improvements
+- Recurring booking functionality

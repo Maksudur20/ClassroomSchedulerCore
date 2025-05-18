@@ -1,0 +1,129 @@
+@{
+    ViewData["Title"] = "About";
+}
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h2>About Classroom Resource Scheduler</h2>
+        <p class="lead">An interactive, automated scheduling system for optimizing classroom resources</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Motivation</h5>
+            </div>
+            <div class="card-body">
+                <p>Universities and colleges face major issues in scheduling limited classroom resources, especially during peak hours and when unexpected events like guest lectures or exams arise. Classrooms often get double-booked or unavailable at critical moments, affecting academic delivery and causing frustration among students and faculty.</p>
+                <p>This project aims to create an interactive, automated scheduling system using ASP.NET Core MVC that allows smart booking, emergency overrides, and conflict resolution — ensuring optimized use of classroom resources with visual feedback and role-based access.</p>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Key Features</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">Faculty/admin booking capabilities</li>
+                            <li class="list-group-item">Emergency override functionality</li>
+                            <li class="list-group-item">Visual status feedback (color-coded)</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">Role-based access control</li>
+                            <li class="list-group-item">SQL database with Entity Framework</li>
+                            <li class="list-group-item">Complete audit logging</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Technology Stack</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">ASP.NET Core MVC (.NET 8.0)</li>
+                            <li class="list-group-item">Entity Framework Core</li>
+                            <li class="list-group-item">SQL Server</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">Bootstrap 5 for UI</li>
+                            <li class="list-group-item">Identity for authentication</li>
+                            <li class="list-group-item">FullCalendar for schedule visualization</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Status Legend</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="me-2">
+                            <span class="badge bg-success">&nbsp;&nbsp;&nbsp;</span>
+                        </div>
+                        <strong>Available</strong>
+                    </div>
+                    <p class="text-muted small">Standard booking that indicates the room is in use but not for critical events.</p>
+                </div>
+                <div class="mb-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="me-2">
+                            <span class="badge bg-warning">&nbsp;&nbsp;&nbsp;</span>
+                        </div>
+                        <strong>Reserved</strong>
+                    </div>
+                    <p class="text-muted small">Indicates the room is reserved but the booking can be changed if needed.</p>
+                </div>
+                <div>
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="me-2">
+                            <span class="badge bg-danger">&nbsp;&nbsp;&nbsp;</span>
+                        </div>
+                        <strong>Emergency</strong>
+                    </div>
+                    <p class="text-muted small">High-priority booking that will automatically override other bookings. Use for critical events only.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">User Roles</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <strong>Admin</strong>
+                    <p class="text-muted small">Can manage rooms, bookings, and view audit logs. Has full system access.</p>
+                </div>
+                <div class="mb-3">
+                    <strong>Faculty</strong>
+                    <p class="text-muted small">Can create and manage their own bookings, including emergency bookings.</p>
+                </div>
+                <div>
+                    <strong>Student</strong>
+                    <p class="text-muted small">View-only access to check room availability and bookings.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

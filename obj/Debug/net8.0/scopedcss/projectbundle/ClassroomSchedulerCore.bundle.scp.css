@@ -1,0 +1,46 @@
+/* _content/ClassroomSchedulerCore/Views/Shared/_Layout.cshtml.rz.scp.css */
+/* Scoped styles for the layout */
+
+/* Make site header stand out */
+.navbar-dark.bg-primary[b-u7tsz4ogxj] {
+    background-color: #0d6efd !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Improve navbar styling */
+.navbar-brand[b-u7tsz4ogxj] {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.navbar-nav .nav-link[b-u7tsz4ogxj] {
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    transition: color 0.15s ease-in-out;
+}
+
+.navbar-dark .navbar-nav .nav-link:hover[b-u7tsz4ogxj] {
+    color: rgba(255, 255, 255, 1);
+}
+
+/* Footer adjustments */
+.footer[b-u7tsz4ogxj] {
+    background-color: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+    padding: 0.5rem 0;
+}
+
+/* Card enhancements */
+.card[b-u7tsz4ogxj] {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover[b-u7tsz4ogxj] {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Make form controls more consistent */
+.form-control[b-u7tsz4ogxj], .form-select[b-u7tsz4ogxj], .btn[b-u7tsz4ogxj] {
+    border-radius: 0.375rem;
+}

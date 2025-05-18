@@ -1,0 +1,138 @@
+@model IEnumerable<Booking>
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h2>Classroom Resource Scheduler</h2>
+        <p class="lead">Welcome to the Classroom Scheduling System. Manage classroom resources efficiently.</p>
+        
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        
+        @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Student"))
+        {
+            <div class="alert alert-info">
+                <p><strong>Having trouble booking classrooms?</strong> If you're experiencing "Access Denied" errors:</p>
+                <a asp-controller="Home" asp-action="FixStudentPermissions" class="btn btn-primary btn-sm">
+                    <i class="bi bi-tools"></i> Fix Student Booking Permissions
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <h5 class="card-title">Total Rooms</h5>
+                <p class="card-text display-4">@ViewBag.TotalRooms</p>
+                <a asp-controller="Rooms" asp-action="Index" class="card-link text-white">View Rooms</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <h5 class="card-title">Total Bookings</h5>
+                <p class="card-text display-4">@ViewBag.TotalBookings</p>
+                <a asp-controller="Bookings" asp-action="Index" class="card-link text-white">View Bookings</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-danger">
+            <div class="card-body">
+                <h5 class="card-title">Emergency Bookings</h5>
+                <p class="card-text display-4">@ViewBag.EmergencyBookings</p>
+                <a asp-controller="Bookings" asp-action="Index" class="card-link text-white">View Bookings</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Today's Bookings</h5>
+                @if (User.IsInRole("Admin") || User.IsInRole("Faculty") || User.IsInRole("Student"))
+                {
+                    <a asp-controller="Bookings" asp-action="Create" class="btn btn-sm btn-primary">
+                        <i class="bi bi-plus"></i> New Booking
+                    </a>
+                }
+            </div>
+            <div class="card-body">
+                @if (Model.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Room</th>
+                                    <th>Title</th>
+                                    <th>Booked By</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var booking in Model)
+                                {
+                                    <tr>
+                                        <td>@booking.StartTime.ToString("HH:mm") - @booking.EndTime.ToString("HH:mm")</td>
+                                        <td>@booking.Room.Name</td>
+                                        <td>@booking.Title</td>
+                                        <td>@booking.User.FullName</td>
+                                        <td>
+                                            @switch (booking.Status)
+                                            {
+                                                case BookingStatus.Available:
+                                                    <span class="badge bg-success">Available</span>
+                                                    break;
+                                                case BookingStatus.Reserved:
+                                                    <span class="badge bg-warning text-dark">Reserved</span>
+                                                    break;
+                                                case BookingStatus.Emergency:
+                                                    <span class="badge bg-danger">Emergency</span>
+                                                    break;
+                                            }
+                                        </td>
+                                        <td>
+                                            <a asp-controller="Bookings" asp-action="Details" asp-route-id="@booking.Id" class="btn btn-sm btn-info">
+                                                <i class="bi bi-info-circle"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-info">
+                        No bookings scheduled for today.
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

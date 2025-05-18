@@ -1,0 +1,128 @@
+@model IEnumerable<AuditLog>
+@{
+    ViewData["Title"] = "Audit Logs";
+}
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h2>Audit Logs</h2>
+        <p class="lead">Track all actions performed within the system for accountability and compliance.</p>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">System Activity</h5>
+                <div>
+                    <form asp-action="AuditLogs" method="get" class="d-flex">
+                        <input type="text" name="searchString" class="form-control me-2" placeholder="Search logs..." value="@ViewBag.CurrentFilter" />
+                        <button type="submit" class="btn btn-outline-primary">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div class="card-body">
+                @if (Model.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Date/Time</th>
+                                    <th>User</th>
+                                    <th>Action</th>
+                                    <th>Entity</th>
+                                    <th>Entity ID</th>
+                                    <th>Details</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var log in Model)
+                                {
+                                    <tr>
+                                        <td>@log.Timestamp.ToString("g")</td>
+                                        <td>@log.UserName</td>
+                                        <td>@log.Action</td>
+                                        <td>@log.EntityName</td>
+                                        <td>@log.EntityId</td>
+                                        <td>
+                                            <button type="button" class="btn btn-sm btn-outline-info" data-bs-toggle="popover" 
+                                                    data-bs-content="@log.Details" data-bs-placement="left" data-bs-html="true">
+                                                <i class="bi bi-info-circle"></i> Details
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    @if (ViewBag.TotalPages > 1)
+                    {
+                        <div class="d-flex justify-content-center mt-4">
+                            <nav aria-label="Audit log navigation">
+                                <ul class="pagination">
+                                    @if (ViewBag.CurrentPage > 1)
+                                    {
+                                        <li class="page-item">
+                                            <a class="page-link" asp-action="AuditLogs" asp-route-page="@(ViewBag.CurrentPage - 1)" asp-route-searchString="@ViewBag.CurrentFilter">Previous</a>
+                                        </li>
+                                    }
+                                    else
+                                    {
+                                        <li class="page-item disabled">
+                                            <a class="page-link" href="#">Previous</a>
+                                        </li>
+                                    }
+
+                                    @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                                    {
+                                        <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                                            <a class="page-link" asp-action="AuditLogs" asp-route-page="@i" asp-route-searchString="@ViewBag.CurrentFilter">@i</a>
+                                        </li>
+                                    }
+
+                                    @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                                    {
+                                        <li class="page-item">
+                                            <a class="page-link" asp-action="AuditLogs" asp-route-page="@(ViewBag.CurrentPage + 1)" asp-route-searchString="@ViewBag.CurrentFilter">Next</a>
+                                        </li>
+                                    }
+                                    else
+                                    {
+                                        <li class="page-item disabled">
+                                            <a class="page-link" href="#">Next</a>
+                                        </li>
+                                    }
+                                </ul>
+                            </nav>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="alert alert-info">
+                        No audit logs found. System activity will appear here when actions are performed.
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize popovers for log details
+            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+            var popoverList = popoverTriggerList.map(function(popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl, {
+                    trigger: 'focus'
+                });
+            });
+        });
+    </script>
+}

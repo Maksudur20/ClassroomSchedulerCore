@@ -1,0 +1,105 @@
+@model Room
+@{
+    ViewData["Title"] = "Create Room";
+}
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+                <li class="breadcrumb-item"><a asp-action="Index">Rooms</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Create</li>
+            </ol>
+        </nav>
+        <h2>Create New Room</h2>
+        <p class="lead">Add a new classroom resource to the system.</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <form asp-action="Create" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label">Room Name</label>
+                        <input asp-for="Name" class="form-control" placeholder="e.g. B201, Computer Lab 1" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Location" class="form-label">Location</label>
+                        <input asp-for="Location" class="form-control" placeholder="e.g. Main Building, 2nd Floor" />
+                        <span asp-validation-for="Location" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Capacity" class="form-label">Capacity</label>
+                        <input asp-for="Capacity" class="form-control" type="number" min="1" />
+                        <span asp-validation-for="Capacity" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                <input asp-for="HasProjector" class="form-check-input" />
+                                <label asp-for="HasProjector" class="form-check-label">Has Projector</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                <input asp-for="HasComputers" class="form-check-input" />
+                                <label asp-for="HasComputers" class="form-check-label">Has Computers</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label">Description</label>
+                        <textarea asp-for="Description" class="form-control" rows="3" placeholder="Additional information about the room"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Create Room</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Guidelines</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <strong>Room Name</strong>: Use a clear, identifiable name following your institution's naming convention.
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Location</strong>: Provide specific building and floor information for easy navigation.
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Capacity</strong>: Enter the maximum number of students the room can accommodate.
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Features</strong>: Mark if the room has technology equipment to help faculty make informed booking decisions.
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Description</strong>: Add any special notes about the room (optional).
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

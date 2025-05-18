@@ -1,0 +1,192 @@
+@model Booking
+@{
+    ViewData["Title"] = "Booking Details";
+}
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+                <li class="breadcrumb-item"><a asp-action="Index">Bookings</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Details</li>
+            </ol>
+        </nav>
+        <h2>Booking Details</h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header status-@(Model.Status.ToString().ToLower())">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">@Model.Title</h5>
+                    <span class="badge @(Model.Status == BookingStatus.Available ? "bg-success" : 
+                                     Model.Status == BookingStatus.Reserved ? "bg-warning text-dark" : 
+                                     "bg-danger")">
+                        @Model.Status.ToString()
+                    </span>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Booking Information</h6>
+                        <dl class="row">
+                            <dt class="col-sm-4">Room</dt>
+                            <dd class="col-sm-8">@Model.Room.Name</dd>
+                            
+                            <dt class="col-sm-4">Date</dt>
+                            <dd class="col-sm-8">@Model.StartTime.ToString("dddd, MMMM d, yyyy")</dd>
+                            
+                            <dt class="col-sm-4">Time</dt>
+                            <dd class="col-sm-8">@Model.StartTime.ToString("HH:mm") - @Model.EndTime.ToString("HH:mm")</dd>
+                            
+                            <dt class="col-sm-4">Duration</dt>
+                            <dd class="col-sm-8">@((Model.EndTime - Model.StartTime).TotalHours.ToString("0.0")) hours</dd>
+                        </dl>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Additional Details</h6>
+                        <dl class="row">
+                            <dt class="col-sm-4">Booked By</dt>
+                            <dd class="col-sm-8">@Model.User.FullName</dd>
+                            
+                            <dt class="col-sm-4">Created On</dt>
+                            <dd class="col-sm-8">@Model.CreatedAt.ToString("MM/dd/yyyy HH:mm")</dd>
+                            
+                            @if (Model.UpdatedAt.HasValue)
+                            {
+                                <dt class="col-sm-4">Last Updated</dt>
+                                <dd class="col-sm-8">@Model.UpdatedAt.Value.ToString("MM/dd/yyyy HH:mm")</dd>
+                            }
+                        </dl>
+                    </div>
+                </div>
+                
+                @if (!string.IsNullOrEmpty(Model.Description))
+                {
+                    <div class="mb-4">
+                        <h6 class="text-muted">Purpose/Description</h6>
+                        <p>@Model.Description</p>
+                    </div>
+                }
+                
+                @if (Model.IsEmergency)
+                {
+                    <div class="alert alert-danger mb-4">
+                        <div class="d-flex">
+                            <i class="bi bi-exclamation-triangle-fill me-2 fs-4"></i>
+                            <div>
+                                <strong>Emergency Booking</strong>
+                                <p class="mb-0">This is an emergency booking that may have overridden previously scheduled reservations.</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+                
+                @if (Model.StartTime < DateTime.Now && Model.EndTime > DateTime.Now)
+                {
+                    <div class="alert alert-info mb-0">
+                        <div class="d-flex">
+                            <i class="bi bi-clock-fill me-2 fs-4"></i>
+                            <div>
+                                <strong>In Progress</strong>
+                                <p class="mb-0">This booking is currently active.</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="card-footer">
+                <div class="d-flex justify-content-between">
+                    <a asp-action="Index" class="btn btn-outline-secondary">Back to List</a>
+                    <div>
+                        @if (User.IsInRole("Admin") || (User.IsInRole("Faculty") && Model.UserId == ViewBag.CurrentUserId))
+                        {
+                            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning me-2">
+                                <i class="bi bi-pencil me-1"></i> Edit
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">
+                                <i class="bi bi-trash me-1"></i> Delete
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Room Information</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-5">Room Name</dt>
+                    <dd class="col-sm-7">@Model.Room.Name</dd>
+                    
+                    <dt class="col-sm-5">Location</dt>
+                    <dd class="col-sm-7">@Model.Room.Location</dd>
+                    
+                    <dt class="col-sm-5">Capacity</dt>
+                    <dd class="col-sm-7">@Model.Room.Capacity seats</dd>
+                    
+                    <dt class="col-sm-5">Features</dt>
+                    <dd class="col-sm-7">
+                        @{
+                            var features = new List<string>();
+                            if (Model.Room.HasProjector) features.Add("Projector");
+                            if (Model.Room.HasComputers) features.Add("Computers");
+                        }
+                        @if (features.Any())
+                        {
+                            @string.Join(", ", features)
+                        }
+                        else
+                        {
+                            <span class="text-muted">None specified</span>
+                        }
+                    </dd>
+                </dl>
+                <div class="mt-3">
+                    <a asp-controller="Rooms" asp-action="Details" asp-route-id="@Model.RoomId" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-info-circle me-1"></i> View Room Details
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Booking Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    @if (Model.StartTime > DateTime.Now)
+                    {
+                        @if (User.IsInRole("Admin") || (User.IsInRole("Faculty") && Model.UserId == ViewBag.CurrentUserId))
+                        {
+                            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-warning">
+                                <i class="bi bi-pencil me-2"></i> Modify Booking
+                            </a>
+                            
+                            @if (Model.Status != BookingStatus.Emergency && (User.IsInRole("Admin") || User.IsInRole("Faculty")))
+                            {
+                                <a asp-action="MakeEmergency" asp-route-id="@Model.Id" class="btn btn-outline-danger">
+                                    <i class="bi bi-exclamation-triangle me-2"></i> Mark as Emergency
+                                </a>
+                            }
+                        }
+                    }
+                    
+                    <a asp-controller="Bookings" asp-action="Create" asp-route-roomId="@Model.RoomId" class="btn btn-outline-primary">
+                        <i class="bi bi-calendar-plus me-2"></i> New Booking for This Room
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

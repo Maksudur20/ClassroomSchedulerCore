@@ -1,0 +1,196 @@
+@model IEnumerable<ClassroomSchedulerCore.Models.Booking>
+@{
+    ViewData["Title"] = "My Class Schedule";
+    var groupedBookings = ViewBag.GroupedBookings as Dictionary<DateTime, List<ClassroomSchedulerCore.Models.Booking>>;
+    var totalBookings = ViewBag.TotalBookings;
+}
+
+<div class="row mb-3">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+                <li class="breadcrumb-item"><a asp-controller="Bookings" asp-action="Index">Bookings</a></li>
+                <li class="breadcrumb-item active">My Schedule</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1>My Class Schedule</h1>
+        <p class="text-muted">View your booked classes and room reservations</p>
+    </div>
+    <div>
+        <a asp-controller="Bookings" asp-action="Create" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Book New Class
+        </a>
+    </div>
+</div>
+
+@if (totalBookings == 0)
+{
+    <div class="alert alert-info">
+        <h4 class="alert-heading"><i class="bi bi-info-circle"></i> No Classes Scheduled</h4>
+        <p>You haven't booked any classes yet. Click the "Book New Class" button to get started.</p>
+    </div>
+}
+else
+{
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0"><i class="bi bi-calendar3"></i> My Schedule</h5>
+            <span class="badge bg-light text-dark">@totalBookings total bookings</span>
+        </div>
+        <div class="card-body p-0">
+            <div class="list-group list-group-flush">
+                @foreach (var dateGroup in groupedBookings)
+                {
+                    <div class="list-group-item list-group-item-action p-0">
+                        <div class="bg-light p-3">
+                            <h5 class="mb-0">
+                                <i class="bi bi-calendar-date"></i>
+                                @dateGroup.Key.ToString("dddd, MMMM d, yyyy")
+                            </h5>
+                        </div>
+                        
+                        <div class="p-0">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Time</th>
+                                        <th>Room</th>
+                                        <th>Title</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var booking in dateGroup.Value.OrderBy(b => b.StartTime))
+                                    {
+                                        <tr>
+                                            <td>
+                                                <strong>@booking.StartTime.ToString("h:mm tt")</strong> - @booking.EndTime.ToString("h:mm tt")
+                                            </td>
+                                            <td>
+                                                @if (booking.Room != null)
+                                                {
+                                                    <span>@booking.Room.Name</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">Unknown</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <a asp-action="Details" asp-route-id="@booking.Id">@booking.Title</a>
+                                                @if (!string.IsNullOrEmpty(booking.Description))
+                                                {
+                                                    <small class="d-block text-muted">@(booking.Description?.Length > 50 ? booking.Description?.Substring(0, 50) + "..." : booking.Description)</small>
+                                                }
+                                            </td>
+                                            <td>
+                                                @switch (booking.Status)
+                                                {
+                                                    case ClassroomSchedulerCore.Models.BookingStatus.Available:
+                                                        <span class="badge bg-success">Available</span>
+                                                        break;
+                                                    case ClassroomSchedulerCore.Models.BookingStatus.Reserved:
+                                                        <span class="badge bg-warning text-dark">Reserved</span>
+                                                        break;
+                                                    case ClassroomSchedulerCore.Models.BookingStatus.Emergency:
+                                                        <span class="badge bg-danger">Emergency</span>
+                                                        break;
+                                                }
+                                                @if (booking.IsEmergency)
+                                                {
+                                                    <span class="badge bg-danger ms-1">Emergency</span>
+                                                }
+                                            </td>
+                                            <td class="text-end">
+                                                <div class="btn-group btn-group-sm" role="group">
+                                                    <a asp-action="Details" asp-route-id="@booking.Id" class="btn btn-outline-primary" title="Details">
+                                                        <i class="bi bi-info-circle"></i>
+                                                    </a>
+                                                    <a asp-action="Edit" asp-route-id="@booking.Id" class="btn btn-outline-secondary" title="Edit">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </a>
+                                                    <a asp-action="Delete" asp-route-id="@booking.Id" class="btn btn-outline-danger" title="Delete">
+                                                        <i class="bi bi-trash"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="bi bi-info-circle"></i> Schedule Legend</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-2">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-success me-2" style="width: 20px; height: 20px;"></div>
+                            <strong>Available</strong>
+                        </div>
+                        <small class="text-muted">Indicates the room is available for standard booking.</small>
+                    </div>
+                    <div class="mb-2">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-warning me-2" style="width: 20px; height: 20px;"></div>
+                            <strong>Reserved</strong>
+                        </div>
+                        <small class="text-muted">Standard reservation that can be overridden by emergency bookings.</small>
+                    </div>
+                    <div>
+                        <div class="d-flex align-items-center">
+                            <div class="bg-danger me-2" style="width: 20px; height: 20px;"></div>
+                            <strong>Emergency</strong>
+                        </div>
+                        <small class="text-muted">High-priority booking that overrides existing reservations.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-question-circle"></i> Need Help?</h5>
+                </div>
+                <div class="card-body">
+                    <p>If you need to make changes to your schedule or have questions about classroom bookings, please follow these steps:</p>
+                    <ol>
+                        <li>Check if the room is available at your desired time</li>
+                        <li>Use the Book New Class button to reserve a room</li>
+                        <li>Contact the administration if you need assistance</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        $(function() {
+            // Highlight the current day's schedule if any
+            const today = new Date();
+            const todayStr = today.toISOString().split('T')[0];
+            
+            // Add a bit of animation to make the current day stand out
+            $(`[data-date="${todayStr}"]`).addClass('bg-light-success');
+        });
+    </script>
+}

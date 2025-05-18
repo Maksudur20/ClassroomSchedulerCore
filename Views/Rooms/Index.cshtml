@@ -1,0 +1,118 @@
+@model IEnumerable<Room>
+@{
+    ViewData["Title"] = "Rooms";
+}
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h2>Classroom Resources</h2>
+        <p class="lead">Manage all available classroom resources in the system.</p>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-md-12">
+        <div class="d-flex justify-content-between align-items-center">
+            @if (User.IsInRole("Admin"))
+            {
+                <a asp-action="Create" class="btn btn-primary mb-3">
+                    <i class="bi bi-plus-circle"></i> Add New Room
+                </a>
+            }
+            else
+            {
+                <div></div> <!-- Empty div for flex spacing -->
+            }
+
+            <form asp-action="Index" method="get" class="d-flex">
+                <input type="text" name="searchString" class="form-control me-2" placeholder="Search rooms..." value="@ViewBag.CurrentFilter" />
+                <button type="submit" class="btn btn-outline-primary">
+                    <i class="bi bi-search"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                @if (Model.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Location</th>
+                                    <th>Capacity</th>
+                                    <th>Has Projector</th>
+                                    <th>Has Computers</th>
+                                    <th>Description</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var room in Model)
+                                {
+                                    <tr>
+                                        <td>@room.Name</td>
+                                        <td>@room.Location</td>
+                                        <td>@room.Capacity</td>
+                                        <td>
+                                            @if (room.HasProjector)
+                                            {
+                                                <i class="bi bi-check-circle-fill text-success"></i>
+                                            }
+                                            else
+                                            {
+                                                <i class="bi bi-x-circle-fill text-danger"></i>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (room.HasComputers)
+                                            {
+                                                <i class="bi bi-check-circle-fill text-success"></i>
+                                            }
+                                            else
+                                            {
+                                                <i class="bi bi-x-circle-fill text-danger"></i>
+                                            }
+                                        </td>
+                                        <td>@(string.IsNullOrEmpty(room.Description) ? "-" : room.Description)</td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <a asp-action="Details" asp-route-id="@room.Id" class="btn btn-sm btn-info">
+                                                    <i class="bi bi-info-circle"></i>
+                                                </a>
+                                                <a asp-controller="Bookings" asp-action="CreateForRoom" asp-route-roomId="@room.Id" class="btn btn-sm btn-success">
+                                                    <i class="bi bi-calendar-plus"></i>
+                                                </a>
+                                                @if (User.IsInRole("Admin"))
+                                                {
+                                                    <a asp-action="Edit" asp-route-id="@room.Id" class="btn btn-sm btn-warning">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </a>
+                                                    <a asp-action="Delete" asp-route-id="@room.Id" class="btn btn-sm btn-danger">
+                                                        <i class="bi bi-trash"></i>
+                                                    </a>
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-info">
+                        No rooms found. @(User.IsInRole("Admin") ? "Click the 'Add New Room' button to create one." : "")
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

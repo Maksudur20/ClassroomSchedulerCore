@@ -1,0 +1,128 @@
+@model IEnumerable<Booking>
+@{
+    ViewData["Title"] = "Schedule";
+    var rooms = ViewBag.Rooms as List<Room>;
+}
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h2>Classroom Schedule</h2>
+        <p>View and manage classroom bookings with visual feedback.</p>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-md-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-outline-secondary" id="todayBtn">Today</button>
+                    <button type="button" class="btn btn-outline-secondary" id="weekBtn">Week</button>
+                    <button type="button" class="btn btn-outline-secondary" id="monthBtn">Month</button>
+                </div>
+                <button type="button" class="btn btn-outline-secondary ms-2" id="prevBtn">
+                    <i class="bi bi-chevron-left"></i>
+                </button>
+                <button type="button" class="btn btn-outline-secondary" id="nextBtn">
+                    <i class="bi bi-chevron-right"></i>
+                </button>
+            </div>
+            <div>
+                <div class="d-flex align-items-center">
+                    <div class="me-4">
+                        <span class="badge bg-success me-1">&nbsp;</span> Available
+                    </div>
+                    <div class="me-4">
+                        <span class="badge bg-warning me-1">&nbsp;</span> Reserved
+                    </div>
+                    <div>
+                        <span class="badge bg-danger me-1">&nbsp;</span> Emergency
+                    </div>
+                </div>
+            </div>
+            <div>
+                @if (User.IsInRole("Admin") || User.IsInRole("Faculty"))
+                {
+                    <a asp-controller="Bookings" asp-action="Create" class="btn btn-primary">
+                        <i class="bi bi-plus"></i> New Booking
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <div id="calendar"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Prepare events data
+            const events = [
+                @foreach (var booking in Model)
+                {
+                    string color;
+                    switch (booking.Status)
+                    {
+                        case BookingStatus.Available:
+                            color = "#28a745"; // green
+                            break;
+                        case BookingStatus.Reserved:
+                            color = "#ffc107"; // yellow
+                            break;
+                        case BookingStatus.Emergency:
+                            color = "#dc3545"; // red
+                            break;
+                        default:
+                            color = "#6c757d"; // grey
+                            break;
+                    }
+                    
+                    <text>
+                    {
+                        id: '@booking.Id',
+                        title: '@booking.Title - @booking.Room.Name',
+                        start: '@booking.StartTime.ToString("yyyy-MM-ddTHH:mm:ss")',
+                        end: '@booking.EndTime.ToString("yyyy-MM-ddTHH:mm:ss")',
+                        backgroundColor: '@color',
+                        borderColor: '@color',
+                        url: '@Url.Action("Details", "Bookings", new { id = booking.Id })'
+                    },
+                    </text>
+                }
+            ];
+            
+            // Initialize the calendar
+            const calendar = initializeCalendar('calendar', events);
+            
+            // Button handlers
+            document.getElementById('todayBtn').addEventListener('click', function() {
+                calendar.today();
+            });
+            
+            document.getElementById('weekBtn').addEventListener('click', function() {
+                calendar.changeView('timeGridWeek');
+            });
+            
+            document.getElementById('monthBtn').addEventListener('click', function() {
+                calendar.changeView('dayGridMonth');
+            });
+            
+            document.getElementById('prevBtn').addEventListener('click', function() {
+                calendar.prev();
+            });
+            
+            document.getElementById('nextBtn').addEventListener('click', function() {
+                calendar.next();
+            });
+        });
+    </script>
+}

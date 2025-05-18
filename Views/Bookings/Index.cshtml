@@ -1,0 +1,186 @@
+@model IEnumerable<Booking>
+@{
+    ViewData["Title"] = "Bookings";
+}
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h2>Classroom Bookings</h2>
+        <p class="lead">Manage all classroom reservations in the system.</p>
+    </div>
+</div>
+
+<div class="container-fluid mb-3">
+    <div class="row">
+        <div class="col-md-12 mb-3 d-flex justify-content-start">
+            @if (User.IsInRole("Admin") || User.IsInRole("Faculty"))
+            {
+                <a asp-action="Create" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> New Booking
+                </a>
+            }
+        </div>
+    </div>
+    
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <form asp-action="Index" method="get" class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Search Bookings</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6 col-lg-6">
+                            <label for="searchString" class="form-label">Search</label>
+                            <input type="text" id="searchString" name="searchString" class="form-control" placeholder="Title, description or room..." value="@ViewBag.SearchString" />
+                        </div>
+                        <div class="col-md-6 col-lg-6">
+                            <label for="roomId" class="form-label">Room</label>
+                            <select id="roomId" name="roomId" class="form-select">
+                                <option value="">All Rooms</option>
+                                @if (ViewBag.Rooms != null)
+                                {
+                                    @foreach (var room in ViewBag.Rooms)
+                                    {
+                                        <option value="@room.Id" selected="@(ViewBag.RoomId == room.Id)">@room.Name</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-6 col-lg-6">
+                            <label for="startDate" class="form-label">Start Date</label>
+                            <input type="date" id="startDate" name="startDate" class="form-control" value="@(ViewBag.StartDate?.ToString("yyyy-MM-dd"))" />
+                        </div>
+                        <div class="col-md-6 col-lg-6">
+                            <label for="endDate" class="form-label">End Date</label>
+                            <input type="date" id="endDate" name="endDate" class="form-control" value="@(ViewBag.EndDate?.ToString("yyyy-MM-dd"))" />
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer d-flex justify-content-end">
+                    <a asp-action="Index" class="btn btn-outline-secondary me-2">Clear</a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search me-1"></i> Search
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                @if (Model.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Room</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Booked By</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var booking in Model)
+                                {
+                                    <tr>
+                                        <td>@booking.Title</td>
+                                        <td>@booking.Room.Name</td>
+                                        <td>@booking.StartTime.ToString("MM/dd/yyyy")</td>
+                                        <td>@booking.StartTime.ToString("HH:mm") - @booking.EndTime.ToString("HH:mm")</td>
+                                        <td>@booking.User.FullName</td>
+                                        <td>
+                                            @switch (booking.Status)
+                                            {
+                                                case BookingStatus.Available:
+                                                    <span class="badge bg-success">Available</span>
+                                                    break;
+                                                case BookingStatus.Reserved:
+                                                    <span class="badge bg-warning text-dark">Reserved</span>
+                                                    break;
+                                                case BookingStatus.Emergency:
+                                                    <span class="badge bg-danger">Emergency</span>
+                                                    break;
+                                            }
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <a asp-action="Details" asp-route-id="@booking.Id" class="btn btn-sm btn-info">
+                                                    <i class="bi bi-info-circle"></i>
+                                                </a>
+                                                @if (User.IsInRole("Admin") || (User.IsInRole("Faculty") && booking.UserId == ViewBag.CurrentUserId))
+                                                {
+                                                    <a asp-action="Edit" asp-route-id="@booking.Id" class="btn btn-sm btn-warning">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </a>
+                                                    <a asp-action="Delete" asp-route-id="@booking.Id" class="btn btn-sm btn-danger">
+                                                        <i class="bi bi-trash"></i>
+                                                    </a>
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    @if (ViewBag.TotalPages > 1)
+                    {
+                        <div class="d-flex justify-content-center mt-4">
+                            <nav aria-label="Booking pagination">
+                                <ul class="pagination">
+                                    @if (ViewBag.CurrentPage > 1)
+                                    {
+                                        <li class="page-item">
+                                            <a class="page-link" asp-action="Index" asp-route-page="@(ViewBag.CurrentPage - 1)" asp-route-filter="@ViewBag.CurrentFilter" asp-route-search="@ViewBag.CurrentSearch">Previous</a>
+                                        </li>
+                                    }
+                                    else
+                                    {
+                                        <li class="page-item disabled">
+                                            <a class="page-link" href="#">Previous</a>
+                                        </li>
+                                    }
+
+                                    @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                                    {
+                                        <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                                            <a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-filter="@ViewBag.CurrentFilter" asp-route-search="@ViewBag.CurrentSearch">@i</a>
+                                        </li>
+                                    }
+
+                                    @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                                    {
+                                        <li class="page-item">
+                                            <a class="page-link" asp-action="Index" asp-route-page="@(ViewBag.CurrentPage + 1)" asp-route-filter="@ViewBag.CurrentFilter" asp-route-search="@ViewBag.CurrentSearch">Next</a>
+                                        </li>
+                                    }
+                                    else
+                                    {
+                                        <li class="page-item disabled">
+                                            <a class="page-link" href="#">Next</a>
+                                        </li>
+                                    }
+                                </ul>
+                            </nav>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="alert alert-info">
+                        No bookings found. @if(User.IsInRole("Admin") || User.IsInRole("Faculty")) { <span>Click the 'New Booking' button to create one.</span> }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

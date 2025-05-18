@@ -1,0 +1,109 @@
+@{
+    ViewData["Title"] = "Fix Booking Permissions";
+    var roles = ViewBag.UserRoles as List<string>;
+    var userName = ViewBag.UserName;
+    var userId = ViewBag.UserId;
+    var isFixed = ViewBag.IsFixed;
+    var isInStudentRole = ViewBag.IsInStudentRole;
+}
+
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h1 class="h3 mb-0">Fix Booking Permissions</h1>
+    </div>
+    <div class="card-body">
+        <div class="mb-4">
+            <h5>Current User Information:</h5>
+            <ul class="list-group">
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>Username:</span>
+                    <span class="badge bg-primary">@userName</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>User ID:</span>
+                    <span class="badge bg-primary">@userId</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>Is In Student Role:</span>
+                    @if (isInStudentRole)
+                    {
+                        <span class="badge bg-success">Yes</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">No</span>
+                    }
+                </li>
+            </ul>
+        </div>
+
+        <div class="mb-4">
+            <h5>Your Current Roles:</h5>
+            @if (roles != null && roles.Any())
+            {
+                <ul class="list-group">
+                    @foreach (var role in roles)
+                    {
+                        <li class="list-group-item">@role</li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <div class="alert alert-warning">
+                    You don't have any roles assigned.
+                </div>
+            }
+        </div>
+
+        @if (isFixed == true)
+        {
+            <div class="alert alert-success">
+                <h5><i class="bi bi-check-circle"></i> Permission Fixed Successfully!</h5>
+                <p>Your account has been updated with the necessary permissions to create bookings.</p>
+                <p>Please try booking a classroom again:</p>
+                <a href="/Bookings/Create" class="btn btn-primary">Book a Classroom</a>
+            </div>
+        }
+        else
+        {
+            <form method="post" asp-action="ApplyFix" asp-controller="Home">
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-lg btn-danger">
+                        <i class="bi bi-wrench"></i> Fix My Permissions Now
+                    </button>
+                </div>
+            </form>
+        }
+
+        <div class="mt-4">
+            <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="card mt-4">
+    <div class="card-header bg-info text-white">
+        <h2 class="h5 mb-0">Direct Action Links</h2>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="d-grid">
+                    <a href="/Bookings/Create" class="btn btn-primary mb-2">
+                        <i class="bi bi-calendar-plus"></i> Book a Classroom
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="d-grid">
+                    <a href="/Bookings/MyBookings" class="btn btn-info">
+                        <i class="bi bi-calendar3"></i> View My Schedule
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
