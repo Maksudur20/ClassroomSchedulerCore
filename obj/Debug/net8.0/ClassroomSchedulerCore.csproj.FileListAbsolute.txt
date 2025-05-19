@@ -252,3 +252,4 @@ F:\ClassroomSchedulerCore\bin\Debug\net8.0\ClassroomSchedulerCore.dll
 F:\ClassroomSchedulerCore\bin\Debug\net8.0\ClassroomSchedulerCore.pdb
 F:\ClassroomSchedulerCore\obj\Debug\net8.0\ClassroomSchedulerCore.genruntimeconfig.cache
 F:\ClassroomSchedulerCore\obj\Debug\net8.0\ref\ClassroomSchedulerCore.dll
+F:\ClassroomSchedulerCore\obj\Debug\net8.0\ClassroomSchedulerCore.sourcelink.json

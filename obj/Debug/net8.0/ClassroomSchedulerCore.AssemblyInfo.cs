@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ClassroomSchedulerCore")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3da0d3c5b881c23fee7a9a0656bc7d145fe9182b")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f84d606eceaf09db238fe71fa222dd2448b50cac")]
 [assembly: System.Reflection.AssemblyProductAttribute("ClassroomSchedulerCore")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ClassroomSchedulerCore")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
